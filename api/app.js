@@ -4,6 +4,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const routes = require('./routes');
+const cors = require('cors');
 
 
 // variable to enable global error logging
@@ -11,6 +12,9 @@ const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'tr
 
 // create the Express app
 const app = express();
+
+// allow cors request from localhost:3000 which is my client server
+const app.use(cors({orgin:'http://localhost:3000/'}));
 
 app.use(express.json());
 
@@ -45,7 +49,7 @@ app.use((err, req, res, next) => {
 
   res.status(err.status || 500).json({
     message: err.message,
-    error: {},
+    error: err,
   });
 });
 
