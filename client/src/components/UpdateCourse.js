@@ -13,16 +13,38 @@ export default class UpdateCourse extends Component {
   componentDidMount(){
     const {context,match} = this.props;
     const {id} = match.params
-    const auth =context.authenticatedUser;
 
     context.data.getOneCourse(id).then(course =>{
-      this.setState({
-        title:course.title,
-        description:course.description,
-        estimatedTime:course.estimatedTime,
-        materialsNeeded:course.materialsNeeded
-      })
+      if(course){
+        if(this.checkAuthority()){
+          this.setState({
+            title:course.title,
+            description:course.description,
+            estimatedTime:course.estimatedTime,
+            materialsNeeded:course.materialsNeeded
+          });
+        } else {
+          this.props.history.push('/forbidden')
+        }
+      }else {
+        this.props.history.push('/notfound')
+      }
+    }).catch((err)=>{
+      this.props.history.push('/error')
+      console.log(err.message)
     })
+  }
+
+  checkAuthority = () => {
+    const {match,context} = this.props; //get course id trying to access
+    const {id} = match. params;
+    const auth =context.authenticatedUser;
+    if(auth){
+      const authCourses = auth.courses; //get current auth user's course list
+      return authCourses.find(course =>{
+        return course.id == id //check this current auth user has this course
+      })
+    }
   }
 
   change = (e) => {
@@ -61,6 +83,9 @@ export default class UpdateCourse extends Component {
         context.actions.signIn(auth.emailAddress,auth.password)
         this.props.history.push('/')
       }
+    }).catch((err)=>{
+      this.props.history.push('/error')
+      console.log(err.message)
     })
   }
 

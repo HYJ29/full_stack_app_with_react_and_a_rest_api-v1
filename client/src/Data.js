@@ -44,8 +44,10 @@ export default class Data {
     const response = await this.api('/users','GET',null,true,{emailAddress:emailAddress,password:password});
     if(response.status === 200){
       return response.json();
+    } else if(response.status ===401 || response.status ===404) {
+      return null;
     } else {
-      return null
+      throw new Error('error from getUser')
       };
   }
 
@@ -86,7 +88,7 @@ export default class Data {
     if(response.status === 200){
       return response.json();
     } else {
-      return null
+      throw new Error('error from getCourses');
     }
   }
 
@@ -113,14 +115,18 @@ export default class Data {
    * @return {Promise}        data from REST api
    */
   async createCourse(course, auth){
-    const response = await this.api('/courses', 'POST', course, true,{emailAddress:auth.emailAddress,password:auth.password});
-    if(response.status === 201){
-      return [];
-    } else if(response.status === 400){
-      return response.json().then(data => data.error.errors);
-    } else {
+    try{
+      const response = await this.api('/courses', 'POST', course, true,{emailAddress:auth.emailAddress,password:auth.password});
+      if(response.status === 201){
+        return [];
+      } else if(response.status === 400){
+        return response.json().then(data => data.error.errors);
+      }
+    } catch(e) {
+      console.log(e)
       throw new Error('error from createCourse');
     }
+
   }
 
   /**
@@ -131,14 +137,18 @@ export default class Data {
    * @return {Promise}        empty array or errors
    */
   async editCourse(id, course, auth){
-    const response = await this.api(`/courses/${id}`, 'PUT', course, true, {emailAddress:auth.emailAddress,password:auth.password});
-    if(response.status===204){
-      return []
-    } else if (response.status ===400){
-      return response.json().then(data=>data.error.errors);
-    } else {
-      return response.json().then(data=>[{message:data.message?data.message:"failed update"}])
+    try {
+      const response = await this.api(`/courses/${id}`, 'PUT', course, true, {emailAddress:auth.emailAddress,password:auth.password});
+      if(response.status===204){
+        return []
+      } else if (response.status ===400){
+        return response.json().then(data=>data.error.errors);
+      }
+    } catch (e){
+      console.log(e)
+      throw new Error('error from editCourse');
     }
+
   }
 
   /**

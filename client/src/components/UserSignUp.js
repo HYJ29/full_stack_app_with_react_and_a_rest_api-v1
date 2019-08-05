@@ -86,6 +86,9 @@ export default class CreateCourese extends Component {
           context.actions.signIn(emailAddress,password)
           this.props.history.push('/')
         }
+      }).catch(error=>{
+        console.log(error);
+        this.props.history.push('/error');
       })
 
   }

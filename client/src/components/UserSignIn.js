@@ -8,6 +8,39 @@ export default class UserSignIn extends Component {
     password:'',
     errors:[]
   }
+
+  change = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    this.setState({
+      [name]:value
+    })
+  }
+
+  submit = () =>{
+    const {context} = this.props;
+    const{
+      emailAddress,
+      password,
+      errors
+    } = this.state
+    const {from} = this.props.location.state || {from:'/'};
+    context.actions.signIn(emailAddress,password).then(user=>{
+      if(user){
+        this.props.history.push(from)
+      } else {
+        this.setState({errors:["Sign in failed"]})
+      }
+    }).catch(error => {
+      console.log(error)
+      this.props.history.push('/error')
+    })
+  }
+
+  cancel = () =>{
+    this.props.history.push('/')
+  }
+
   render() {
     const {
       username,
@@ -42,36 +75,5 @@ export default class UserSignIn extends Component {
         </div>
       </div>
     )
-  }
-
-  change = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    this.setState({
-      [name]:value
-    })
-  }
-
-  submit = () =>{
-    const {context} = this.props;
-    const{
-      emailAddress,
-      password,
-      errors
-    } = this.state
-    const {from} = this.props.location.state || {from:'/'};
-    context.actions.signIn(emailAddress,password).then(user=>{
-      if(user){
-        this.props.history.push(from)
-      } else {
-        this.setState({errors:["Sign in failed"]})
-      }
-    }).catch(errors => {
-      console.log(errors)
-    })
-  }
-
-  cancel = () =>{
-
   }
 }

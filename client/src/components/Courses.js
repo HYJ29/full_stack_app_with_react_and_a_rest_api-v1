@@ -11,7 +11,14 @@ export default class Courses extends Component {
     const {context} = this.props
     const {courses} = this.state
     context.data.getCourses().then((courses)=>{
-      this.setState({courses})
+      if(courses){
+        this.setState({courses})
+      } else {
+        this.props.history.push('/notfound')
+      }
+    }).catch((err)=>{
+      this.props.history.push('/error')
+      console.log(err.message)
     })
   }
 

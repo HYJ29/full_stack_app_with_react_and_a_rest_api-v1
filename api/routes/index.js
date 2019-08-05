@@ -71,7 +71,12 @@ router.get('/users',authenticateUser,(req,res,next)=>{
       }
     ],
   }).then(users=>{
-    res.status(200).json(users);
+    if(users){
+      res.status(200).json(users);
+    } else {
+      res.status(404).end();
+    }
+
   }).catch(error=> next(error));
 })
 
@@ -88,13 +93,6 @@ router.post('/users',[
   .exists({checkFalsy:true})
   .isEmail(),
   check('emailAddress','Email should be unique!')
-  // .custom(async (val) => {
-  //   await User.findAll({where:{emailAddress:val}}).then(user => {
-  //     if(user.length>0) {
-  //       throw new Error()
-  //     }
-  //   });
-  // }),
   .custom(val => {
     return User.findAll({where:{emailAddress:val}}).then(user => {
       if(user.length>0) {
@@ -119,6 +117,7 @@ router.post('/users',[
   if(user.password){
     user.password = bcryptjs.hashSync(user.password);
   }
+
   User.create(user).then(user=>{
     res.status(201).location('/').end();
   }).catch(error=>{
@@ -181,12 +180,13 @@ router.get('/courses/:id', (req,res,next)=>{
 //post new course
 router.post('/courses',authenticateUser, (req,res,next)=>{
   Course.create(req.body).then(function(course){
+
     res.status(201).location(`/api/courses/${course.id}`).end();
   }).catch(error=>{
     if(error.name==="SequelizeValidationError"){
       error.status = 400;
       next(error);
-    }else{
+    } else {
       next(error);
     }
   })
@@ -202,6 +202,7 @@ router.put('/courses/:id',authenticateUser, authorizeUser, (req,res,next)=>{
     userId: null
   },req.body)
     Course.update(updatedCourse,{where:{id:req.params.id}}).then(function(){
+
       res.status(204).end();
     }).catch(error=>{
       if(error.name==="SequelizeValidationError"){

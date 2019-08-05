@@ -21,8 +21,11 @@ export default class CourseDetail extends Component {
         }
         this.setState({course});
       } else {
-        this.props.history.push('/error')
+        this.props.history.push('/notfound')
       }
+    }).catch((err)=>{
+      this.props.history.push('/error')
+      console.log(err.message)
     })
   }
 
