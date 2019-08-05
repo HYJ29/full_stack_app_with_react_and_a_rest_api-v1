@@ -1,3 +1,4 @@
+
 /* line 7, ../sass/reset.sass */
 a,
 abbr,
@@ -347,6 +348,7 @@ p {
   display: block;
   position: relative;
   box-sizing: border-box;
+
 }
 /* line 2, ../sass/mixins.sass */
 .course--module:before, .course--module:after {
@@ -750,4 +752,50 @@ input:focus {
 /* reduce bottom margin on the course description textarea element */
 .course--description textarea {
   margin-bottom: 20px;
+}
+
+/* Custom */
+.mine{
+  border-color: #FFEB54;
+  border-style: solid;
+  border-width: thick;
+}
+
+.notmine{
+  border-width: thick;
+  border-color: #4029B3;
+  border-style: solid;
+}
+
+.notFound  {
+  display: flex;
+  flex-direction: column;
+
+}
+.notFound img{
+  width:50%;
+  margin:auto;
+
+}
+
+.notFound p {
+  font-size: 40px;
+  font-family: "Work Sans", sans-serif;
+  margin:auto;
+}
+
+#goBackButton{
+  width: 200px;
+  margin:auto;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.profile-label{
+  padding-left: 15px;
+}
+
+.profile-value {
+  font-size: 2rem;
+  padding-left: 15px;
 }

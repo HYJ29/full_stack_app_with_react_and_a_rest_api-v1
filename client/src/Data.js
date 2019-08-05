@@ -1,6 +1,6 @@
 import config from './config'
 
-exports default class Data {
+export default class Data {
   /**
    * Getting data from REST API
    * @param  {string}  path                routing path
@@ -15,7 +15,7 @@ exports default class Data {
     const options = {
       method,
       headers :{
-        'Content-type'= 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8',
       }
     };
 
@@ -26,7 +26,7 @@ exports default class Data {
 
     //if it require auth, put options headers an encoded credential
     if(requireAuth){
-      const encodedCredentials = btoa(`{${credentials.username}:${credentials.password}}`);
+      const encodedCredentials = btoa(`${credentials.emailAddress}:${credentials.password}`);
       options.headers['Authorization'] = `Basic ${encodedCredentials}`;
     }
 
@@ -40,13 +40,13 @@ exports default class Data {
    * @param  {String}  pssword  [password]
    * @return {Promise}          user data frm REST API
    */
-  async getUser(username,pssword){
-    const response = await this.api('/users','GET',null,true,{username,password});
+  async getUser(emailAddress,password){
+    const response = await this.api('/users','GET',null,true,{emailAddress:emailAddress,password:password});
     if(response.status === 200){
       return response.json();
     } else {
-      throw new Error('error from getUsers')
-    }
+      return null
+      };
   }
 
   /**
@@ -57,9 +57,21 @@ exports default class Data {
   async createUser(user){
     const response = await this.api('/users', 'POST', user);
     if(response.status === 201){
-      return [];
+      return []
+      //errors from sequelize validation
     } else if (response.status ===400){
-      return response.json().then(data => data.error)
+      return response.json().then(data =>{
+        return data.error.errors
+      })
+      //errors from express-validator( actually using this)
+    } else if( response.status === 422){
+      return response.json().then(data => {
+        return data.errors.map(error => {
+          return {
+            message:error.msg
+          }
+        })
+      })
     } else {
       throw new Error('error from createUser')
     }
@@ -74,7 +86,7 @@ exports default class Data {
     if(response.status === 200){
       return response.json();
     } else {
-      throw new Error('error from getCourese');
+      return null
     }
   }
 
@@ -88,7 +100,7 @@ exports default class Data {
     if(response.status === 200){
       return response.json();
     } else if(response.status === 404){
-      return response.json().then(data => data.error)
+      return null
     } else {
       throw new Error('error from getOneCourse');
     }
@@ -101,13 +113,13 @@ exports default class Data {
    * @return {Promise}        data from REST api
    */
   async createCourse(course, auth){
-    const response = await this.api('/courses', 'POST', course, true,{auth.usernmae,auth,password});
+    const response = await this.api('/courses', 'POST', course, true,{emailAddress:auth.emailAddress,password:auth.password});
     if(response.status === 201){
       return [];
     } else if(response.status === 400){
-      return response.json().then(data => data.error);
+      return response.json().then(data => data.error.errors);
     } else {
-      throw new Erorr('error from createCourse');
+      throw new Error('error from createCourse');
     }
   }
 
@@ -119,13 +131,13 @@ exports default class Data {
    * @return {Promise}        empty array or errors
    */
   async editCourse(id, course, auth){
-    const response = await this.api(`/courses/${id}`, 'PUT', course, true, {auth.username,auth.password});
+    const response = await this.api(`/courses/${id}`, 'PUT', course, true, {emailAddress:auth.emailAddress,password:auth.password});
     if(response.status===204){
       return []
     } else if (response.status ===400){
-      return response.json().then(data=>data.error);
+      return response.json().then(data=>data.error.errors);
     } else {
-      throw new Error('error from editCourse');
+      return response.json().then(data=>[{message:data.message?data.message:"failed update"}])
     }
   }
 
@@ -136,11 +148,11 @@ exports default class Data {
    * @return {Promise}      empty array or errors
    */
   async deleteCourse(id, auth){
-    const response = await this.api(`/courses/${id}`, 'DELETE', null, true, {auth.username, auth.password});
+    const response = await this.api(`/courses/${id}`, 'DELETE', null, true, {emailAddress:auth.emailAddress,password:auth.password});
     if(response.status===204){
       return [];
     } else {
-      throw new Error('error from deleteCourse')
+      return response.json().then(data=>data.error.errors);
     }
   }
 

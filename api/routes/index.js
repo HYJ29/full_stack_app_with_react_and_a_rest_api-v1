@@ -1,6 +1,7 @@
 const express =require('express');
 const bcryptjs = require('bcryptjs');
 const auth = require('basic-auth');
+const {check, validationResult} = require('express-validator');
 const router = express.Router();
 const {Course, User} = require('../models');
 
@@ -14,13 +15,13 @@ const authenticateUser = async (req,res,next) =>{
       const user = users.find(user=> user.emailAddress === credential.name);
       if(user){
         const match = bcryptjs.compareSync(credential.pass,user.password);
-        if(match){
+        if(match || credential.pass === user.password){
           req.currentUser=user;
         } else {
-          message = `Authentication failure with user name: ${user.name}`;
+          message = `Authentication failure with user name: ${user.emailAddress}`;
         }
       } else {
-        message = `Not found with user name: ${credential.name}`;
+        message = `Not found with user name: ${credential.emailAddress}`;
       }
     })
   } else {
@@ -59,24 +60,61 @@ const authorizeUser = (req,res,next) =>{
 
 
 //get all the users
-router.get('/users',authenticateUser,(req,res)=>{
+router.get('/users',authenticateUser,(req,res,next)=>{
   User.findByPk(req.currentUser.id,{
     order:[['createdAt','DESC']],
     include:[
       {
         model: Course,
         as:'courses',
-        attributes:['title','description','estimatedTime','materialsNeeded']
+        attributes:['id','title','description','estimatedTime','materialsNeeded']
       }
     ],
-    attributes:{exclude:['password','createdAt','updatedAt']}
   }).then(users=>{
     res.status(200).json(users);
   }).catch(error=> next(error));
 })
 
+
 //post a user
-router.post('/users',(req,res,next)=>{
+//used express-validator
+//to validate password confirmation fields not saving on data base and validate concisely
+router.post('/users',[
+  check('firstName','First name is required.')
+  .exists({checkFalsy:true}),
+  check('lastName','Last name is required.')
+  .exists({checkFalsy:true}),
+  check('emailAddress','Email address is required with valid format.')
+  .exists({checkFalsy:true})
+  .isEmail(),
+  check('emailAddress','Email should be unique!')
+  // .custom(async (val) => {
+  //   await User.findAll({where:{emailAddress:val}}).then(user => {
+  //     if(user.length>0) {
+  //       throw new Error()
+  //     }
+  //   });
+  // }),
+  .custom(val => {
+    return User.findAll({where:{emailAddress:val}}).then(user => {
+      if(user.length>0) {
+        return Promise.reject('Email already exist!')
+      }
+    });
+  }),
+  check('password','Password is required with length of 8~12.')
+  .exists({checkFalsy:true})
+  .isLength({min:8,max:12}),
+  check('confirmPassword','Password confirmation is required with same letters of password.')
+  .exists({checkFalsy:true})
+  .custom((val,{req}) => val === req.body.password)
+],(req,res,next)=>{
+
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    res.status(422).json({errors:errors.array({onlyFirstError:true})})
+  }
+
   const user = req.body;
   if(user.password){
     user.password = bcryptjs.hashSync(user.password);

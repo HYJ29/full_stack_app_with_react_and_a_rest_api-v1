@@ -14,7 +14,7 @@ const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'tr
 const app = express();
 
 // allow cors request from localhost:3000 which is my client server
-const app.use(cors({orgin:'http://localhost:3000/'}));
+app.use(cors({orgin:'http://localhost:3000/'}));
 
 app.use(express.json());
 
@@ -29,6 +29,11 @@ app.get('/', (req, res) => {
     message: 'Welcome to the REST API project!',
   });
 });
+
+app.use('/',(req,res,next)=>{
+  console.log(req.path)
+  next();
+})
 
 //router
 app.use('/api',routes);
