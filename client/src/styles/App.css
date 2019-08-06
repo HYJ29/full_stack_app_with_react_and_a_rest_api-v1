@@ -798,4 +798,5 @@ input:focus {
 .profile-value {
   font-size: 2rem;
   padding-left: 15px;
+  margin-bottom: 40px;
 }

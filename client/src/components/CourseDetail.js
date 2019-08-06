@@ -64,7 +64,10 @@ export default class CourseDetail extends Component {
               course && auth.emailAddress === course.user.emailAddress
               ?
               <span>
-                <Link className="button" to={`/courses/${id}/update`}>Update Course</Link>
+                <Link className="button" to={{
+                  pathname:`/courses/${id}/update`,
+                  state:{from:this.props.location}
+                }}>Update Course</Link>
                 {
                   tryDelete
                   ?

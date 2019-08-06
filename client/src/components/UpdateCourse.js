@@ -37,7 +37,7 @@ export default class UpdateCourse extends Component {
 
   checkAuthority = () => {
     const {match,context} = this.props; //get course id trying to access
-    const {id} = match. params;
+    const {id} = match.params;
     const auth =context.authenticatedUser;
     if(auth){
       const authCourses = auth.courses; //get current auth user's course list
@@ -73,6 +73,7 @@ export default class UpdateCourse extends Component {
       userId:auth.id
     }
     const {id} = match.params
+    const {from} = this.props.location.state || {from:`/courses/${id}/update`};
 
     context.data.editCourse(id, course,auth)
     .then(errors => {
@@ -81,7 +82,7 @@ export default class UpdateCourse extends Component {
         this.setState({errors:errMessages})
       } else {
         context.actions.signIn(auth.emailAddress,auth.password)
-        this.props.history.push('/')
+        this.props.history.push(from)
       }
     }).catch((err)=>{
       this.props.history.push('/error')
@@ -90,7 +91,9 @@ export default class UpdateCourse extends Component {
   }
 
   cancel = () => {
-    this.props.history.push('/')
+    const id = this.props.match.params
+    const {from} = this.props.location.state || {from:`/courses/${id}/update`};
+    this.props.history.push(from)
   }
 
   render() {
