@@ -12,6 +12,62 @@ export default class CreateCourese extends Component {
 
     errors:[]
   }
+  /*
+  change state everytime input values updated
+   */
+  change = (e) =>{
+    const name = e.target.name;
+    const value = e.target.value;
+    this.setState(()=>{
+      return {[name]:value}
+    });
+  }
+
+  /*
+  creating user actions
+   */
+  submit = () =>{
+    const {
+      firstName,
+      lastName,
+      emailAddress,
+      password,
+      confirmPassword,
+    } = this.state
+    const {context} = this.props
+    const user = {
+      firstName,
+      lastName,
+      emailAddress,
+      password,
+      confirmPassword
+    }
+    context.data.createUser(user)
+      .then(errors => {
+        if(errors.length>0){
+          const errMessages = errors.map(error=>error.message);
+          this.setState({errors:errMessages})
+        } else {
+          context.actions.signIn(emailAddress,password)
+          this.props.history.push('/')
+        }
+      }).catch(error=>{
+        console.log(error);
+        this.props.history.push('/error');
+      })
+
+  }
+
+  /*
+  go back to '/'
+   */
+  cancel = () =>{
+    this.props.history.push('/')
+  }
+
+  /*
+  rendering
+   */
   render() {
     const {
       firstName,
@@ -50,50 +106,4 @@ export default class CreateCourese extends Component {
       </div>
     )
   };
-
-  change = (e) =>{
-    const name = e.target.name;
-    const value = e.target.value;
-    this.setState(()=>{
-      return {[name]:value}
-    });
-  }
-
-
-  submit = () =>{
-    const {
-      firstName,
-      lastName,
-      emailAddress,
-      password,
-      confirmPassword,
-      errors
-    } = this.state
-    const {context} = this.props
-    const user = {
-      firstName,
-      lastName,
-      emailAddress,
-      password,
-      confirmPassword
-    }
-    context.data.createUser(user)
-      .then(errors => {
-        if(errors.length>0){
-          const errMessages = errors.map(error=>error.message);
-          this.setState({errors:errMessages})
-        } else {
-          context.actions.signIn(emailAddress,password)
-          this.props.history.push('/')
-        }
-      }).catch(error=>{
-        console.log(error);
-        this.props.history.push('/error');
-      })
-
-  }
-
-  cancel = () =>{
-
-  }
 }

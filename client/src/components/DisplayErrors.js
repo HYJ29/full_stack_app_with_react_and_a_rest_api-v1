@@ -1,5 +1,8 @@
 import React from 'react';
 
+/*
+error display component
+ */
 export default function DisplayErrors({errors}) {
   let displayErrors = null
   if(errors.length>0){

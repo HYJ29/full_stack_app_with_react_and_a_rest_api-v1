@@ -10,6 +10,9 @@ export default class CreateCourese extends Component {
     errors:[]
   }
 
+  /*
+  change state every time imput value is updated
+   */
   change = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -18,6 +21,9 @@ export default class CreateCourese extends Component {
     })
   }
 
+  /*
+  create course when submitted
+   */
   submit = () => {
     const {context,location} = this.props;
     const auth = context.authenticatedUser;
@@ -27,7 +33,6 @@ export default class CreateCourese extends Component {
       description,
       estimatedTime,
       materialsNeeded,
-      errors
     } = this.state;
     const course = {
       title,
@@ -54,6 +59,9 @@ export default class CreateCourese extends Component {
     })
   }
 
+  /*
+  goback to the previous location or '/'
+   */
   cancel = () => {
     const {location} = this.props
     const {from} = location.state || '/';
@@ -62,10 +70,6 @@ export default class CreateCourese extends Component {
 
   render() {
     const {
-      title,
-      description,
-      estimatedTime,
-      materialsNeeded,
       errors
     } = this.state;
     const {context} = this.props;

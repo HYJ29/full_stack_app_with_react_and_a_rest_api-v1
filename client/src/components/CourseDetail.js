@@ -6,10 +6,11 @@ export default class CourseDetail extends Component {
     course:null,
     tryDelete:false
   }
-
+/**
+ * get Course detail data and set state
+ */
   componentDidMount(){
     const {context, match} = this.props;
-    const {course} = this.state;
     const id = match.params.id
     context.data.getOneCourse(id).then(course => {
       if(course){
@@ -29,13 +30,19 @@ export default class CourseDetail extends Component {
     })
   }
 
+
+  /*
+  first click of delete
+   */
   delete = () =>{
     this.setState({tryDelete:true})
   }
 
+  /*
+  second click of delete ( implement deleting action )
+   */
   deleteConfirm = () => {
     const {context, match} = this.props;
-    const {course} = this.state;
     const id = match.params.id
     const auth = context.authenticatedUser
 
@@ -48,6 +55,10 @@ export default class CourseDetail extends Component {
       }
     })
   }
+
+  /*
+  rendering 
+   */
   render() {
     const {context, match} = this.props;
     const {course,tryDelete} = this.state;
@@ -61,7 +72,7 @@ export default class CourseDetail extends Component {
           <div className="bounds">
             <div className="grid-100">
             {
-              course && auth.emailAddress === course.user.emailAddress
+              course && auth && auth.emailAddress === course.user.emailAddress
               ?
               <span>
                 <Link className="button" to={{

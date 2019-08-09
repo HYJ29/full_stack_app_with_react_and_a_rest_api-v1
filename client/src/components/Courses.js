@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 import DisplayCourses from './DisplayCourses';
 
 export default class Courses extends Component {
@@ -7,9 +6,11 @@ export default class Courses extends Component {
     courses:[]
   }
 
+  /*
+  load courses data and set state
+   */
   componentDidMount() {
     const {context} = this.props
-    const {courses} = this.state
     context.data.getCourses().then((courses)=>{
       if(courses){
         this.setState({courses})
@@ -21,7 +22,10 @@ export default class Courses extends Component {
       console.log(err.message)
     })
   }
-
+  
+  /*
+  rendering
+   */
   render(){
     const {context} = this.props
     const {courses} = this.state

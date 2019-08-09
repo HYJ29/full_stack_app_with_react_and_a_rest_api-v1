@@ -6,10 +6,15 @@ export default function DisplayCourses({
   auth,
   location
 }) {
+
+  /*
+  rnedering
+   */
   return (
     <div className="bounds">
       {
         courses.map((course,i)=>{
+          //classname for my courses
           const myCourse =
             auth && course.user && auth.emailAddress === course.user.emailAddress
             ?
@@ -24,8 +29,8 @@ export default function DisplayCourses({
             }}>
                 <h4 className="course--label">Course</h4>
                 <h3 className="course--title">{course.title}</h3>
-                <h3 className="course--label">{`Username: ${course.user && course.user.firstName || auth.firstName} ${course.user && course.user.lastName || auth.lastName}`}</h3>
-                <h3 className="course--label">{`Email address: ${course.user&& course.user.emailAddress || auth.emailAddress}`}</h3>
+                <h3 className="course--label">{`Username: ${course.user ? course.user.firstName : auth.firstName} ${course.user ? course.user.lastName : auth.lastName}`}</h3>
+                <h3 className="course--label">{`Email address: ${course.user ? course.user.emailAddress : auth.emailAddress}`}</h3>
 
 
               </Link></div>

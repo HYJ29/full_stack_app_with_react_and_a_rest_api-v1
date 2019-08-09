@@ -8,7 +8,9 @@ export default class UserSignIn extends Component {
     password:'',
     errors:[]
   }
-
+  /*
+  change state everytime the input values changes
+   */
   change = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -17,12 +19,14 @@ export default class UserSignIn extends Component {
     })
   }
 
+  /*
+  User sigin in actions
+   */
   submit = () =>{
     const {context} = this.props;
     const{
       emailAddress,
-      password,
-      errors
+      password
     } = this.state
     const {from} = this.props.location.state || {from:'/'};
     context.actions.signIn(emailAddress,password).then(user=>{
@@ -43,13 +47,8 @@ export default class UserSignIn extends Component {
 
   render() {
     const {
-      username,
-      password,
       errors
     } = this.state
-    const {
-      context
-    } = this.props
     return (
       <div className="bounds">
         <div className="grid-33 centered signin">

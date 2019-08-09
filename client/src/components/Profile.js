@@ -5,13 +5,18 @@ export default class Profile extends Component {
   state={
     user: null
   }
-
+  /*
+  load current authentifiaction user data and set state.
+   */
   componentDidMount(){
     const {context} = this.props;
     const auth = context.authenticatedUser;
     this.setState({user:auth})
   }
 
+  /*
+  rendering
+   */
   render(){
     const {user} = this.state
     return(

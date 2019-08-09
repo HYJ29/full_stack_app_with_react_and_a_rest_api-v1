@@ -10,6 +10,9 @@ export default class UpdateCourse extends Component {
     errors:[]
   }
 
+  /*
+  load course data to be updated and set state
+   */
   componentDidMount(){
     const {context,match} = this.props;
     const {id} = match.params
@@ -35,6 +38,9 @@ export default class UpdateCourse extends Component {
     })
   }
 
+  /*
+  checing authority function
+   */
   checkAuthority = () => {
     const {match,context} = this.props; //get course id trying to access
     const {id} = match.params;
@@ -42,7 +48,8 @@ export default class UpdateCourse extends Component {
     if(auth){
       const authCourses = auth.courses; //get current auth user's course list
       return authCourses.find(course =>{
-        return course.id == id //check this current auth user has this course
+        const courseId = String(course.id);
+        return courseId === id //check this current auth user has this course
       })
     }
   }
@@ -63,7 +70,6 @@ export default class UpdateCourse extends Component {
       description,
       estimatedTime,
       materialsNeeded,
-      errors
     } = this.state;
     const course = {
       title,
@@ -90,12 +96,18 @@ export default class UpdateCourse extends Component {
     })
   }
 
+  /*
+  go back to previous location or course detail page
+   */
   cancel = () => {
     const id = this.props.match.params
     const {from} = this.props.location.state || {from:`/courses/${id}/update`};
     this.props.history.push(from)
   }
 
+  /*
+  rendering
+   */
   render() {
     const {
       title,

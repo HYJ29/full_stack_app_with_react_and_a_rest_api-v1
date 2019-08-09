@@ -1,6 +1,10 @@
 import React from 'react';
 import DisplayErrors from './DisplayErrors';
 
+
+/*
+have general form actions 
+ */
 export default (props) => {
   const {
     elements,
